@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Add this import for formatting timestamps
+import '../classes/message.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -11,12 +12,30 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   final TextEditingController _controller = TextEditingController();
   final List<Message> items = [];
+  final String channelName =
+      '#libera'; // TODO: Replace with actual channel name
+
+  void _sendMessage() {
+    setState(() {
+      // Add the message to the list
+      items.insert(
+        0,
+        Message(
+          text: _controller.text,
+          timestamp: DateTime.now(),
+          username: 'hllywluis', // TODO: Replace with actual username
+        ),
+      );
+      // Clear the text field
+      _controller.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Straw'),
+        title: Text(channelName),
       ),
       body: SafeArea(
         child: Column(
@@ -43,30 +62,18 @@ class HomeState extends State<Home> {
                   Expanded(
                     child: TextField(
                       controller: _controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter a message',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: 'Message in $channelName',
+                        border: const OutlineInputBorder(),
                       ),
+                      onSubmitted: (value) {
+                        _sendMessage();
+                      },
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.send),
-                    onPressed: () {
-                      setState(() {
-                        // Add the message to the list
-                        items.insert(
-                          0,
-                          Message(
-                            text: _controller.text,
-                            timestamp: DateTime.now(),
-                            username:
-                                'Current User', // Replace with actual username
-                          ),
-                        );
-                        // Clear the text field
-                        _controller.clear();
-                      });
-                    },
+                    onPressed: _sendMessage,
                   ),
                 ],
               ),
@@ -82,16 +89,4 @@ class HomeState extends State<Home> {
     _controller.dispose();
     super.dispose();
   }
-}
-
-class Message {
-  final String text;
-  final DateTime timestamp;
-  final String username;
-
-  Message({
-    required this.text,
-    required this.timestamp,
-    required this.username,
-  });
 }
