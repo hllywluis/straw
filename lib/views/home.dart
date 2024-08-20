@@ -60,15 +60,44 @@ class HomeState extends State<Home> {
               child: Row(
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        hintText: 'Message in $channelName',
-                        border: const OutlineInputBorder(),
-                      ),
-                      onSubmitted: (value) {
-                        _sendMessage();
+                    child: Focus(
+                      onFocusChange: (hasFocus) {
+                        // Trigger a rebuild to update the decoration
+                        setState(() {});
                       },
+                      child: Builder(
+                        builder: (context) {
+                          final hasFocus = Focus.of(context).hasFocus;
+                          return Container(
+                            padding: const EdgeInsets.all(
+                                4.0), // Add padding to create space for the shadow
+                            decoration: BoxDecoration(
+                              boxShadow: hasFocus
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.blue.withOpacity(0.25),
+                                        blurRadius: 10.0,
+                                        spreadRadius: 2.0,
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                            child: TextField(
+                              controller: _controller,
+                              decoration: InputDecoration(
+                                hintText: 'Message in $channelName',
+                                border: const OutlineInputBorder(),
+                                filled: true, // Ensure the background is filled
+                                fillColor:
+                                    Colors.white, // Set the background color
+                              ),
+                              onSubmitted: (value) {
+                                _sendMessage();
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   IconButton(
